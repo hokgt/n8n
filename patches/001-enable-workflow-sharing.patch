@@ -1,0 +1,41 @@
+diff --git a/packages/@n8n/backend-common/src/license-state.ts b/packages/@n8n/backend-common/src/license-state.ts
+index d78ba53eb6..348aea537c 100644
+--- a/packages/@n8n/backend-common/src/license-state.ts
++++ b/packages/@n8n/backend-common/src/license-state.ts
+@@ -66,8 +66,8 @@ export class LicenseState {
+ 		return this.isLicensed(LICENSE_FEATURES.PERSONAL_SPACE_POLICY);
+ 	}
+ 
+-	isSharingLicensed() {
+-		return this.isLicensed('feat:sharing');
++	isSharingLicensed() { // n8n_plus
++		return true; // n8n_plus: enable workflow sharing
+ 	}
+ 
+ 	isLogStreamingLicensed() {
+diff --git a/packages/cli/src/license.ts b/packages/cli/src/license.ts
+index 129f4e343a..80c8180af1 100644
+--- a/packages/cli/src/license.ts
++++ b/packages/cli/src/license.ts
+@@ -262,7 +262,7 @@ export class License implements LicenseProvider {
+ 
+ 	/** @deprecated Use `LicenseState.isSharingLicensed` instead. */
+ 	isSharingEnabled() {
+-		return this.isLicensed(LICENSE_FEATURES.SHARING);
++		return true; // n8n_plus: enable workflow sharing
+ 	}
+ 
+ 	/** @deprecated Use `LicenseState.isLogStreamingLicensed` instead. */
+diff --git a/packages/cli/src/services/frontend.service.ts b/packages/cli/src/services/frontend.service.ts
+index c5fb3aa47b..a56426f07e 100644
+--- a/packages/cli/src/services/frontend.service.ts
++++ b/packages/cli/src/services/frontend.service.ts
+@@ -303,7 +303,7 @@ export class FrontendService {
+ 				external: process.env.NODE_FUNCTION_ALLOW_EXTERNAL?.split(',') ?? undefined,
+ 			},
+ 			enterprise: {
+-				sharing: false,
++				sharing: true, // n8n_plus: enable workflow sharing
+ 				ldap: false,
+ 				saml: false,
+ 				oidc: false,
