@@ -38,3 +38,12 @@
 !packages/@n8n/benchmark/**
 !packages/@n8n/typescript-config
 !packages/@n8n/typescript-config/**
+
+# === Wijayacorp custom extensions ===
+!custom-hooks
+!custom-hooks/**
+!custom-nodes
+!custom-nodes/**
+!patches
+!patches/**
+!Dockerfile.custom
