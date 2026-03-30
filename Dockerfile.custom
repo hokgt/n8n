@@ -1,0 +1,28 @@
+FROM n8nio/n8n:2.13.4
+
+USER root
+
+# Copy custom hooks
+COPY custom-hooks/ /home/node/custom-hooks/
+
+# Copy custom nodes (if any exist)
+COPY custom-nodes/ /home/node/custom-nodes/
+
+# Apply patches (if any .patch files exist)
+COPY patches/ /tmp/patches/
+RUN cd /usr/local/lib/node_modules/n8n && \
+    for p in /tmp/patches/*.patch; do \
+      [ -f "$p" ] && git apply "$p" && echo "Applied: $p" || true; \
+    done; \
+    rm -rf /tmp/patches
+
+# Ensure correct ownership
+RUN chown -R node:node /home/node/custom-hooks /home/node/custom-nodes
+
+USER node
+
+# Wire up external hooks
+ENV N8N_EXTERNAL_HOOK_FILES=/home/node/custom-hooks/hooks.js
+
+# Custom nodes directory
+ENV CUSTOM_EXTENSION_ENV=/home/node/custom-nodes
