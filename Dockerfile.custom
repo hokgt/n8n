@@ -8,14 +8,24 @@ COPY custom-hooks/ /home/node/custom-hooks/
 # Copy custom nodes (if any exist)
 COPY custom-nodes/ /home/node/custom-nodes/
 
-# Apply patches (only .patch files)
-COPY patches/ /tmp/patches/
-RUN cd /usr/local/lib/node_modules/n8n && \
-    ls /tmp/patches/*.patch 2>/dev/null && \
-    for p in /tmp/patches/*.patch; do \
-      git apply "$p" && echo "Applied: $p"; \
-    done || echo "No patches to apply"; \
-    rm -rf /tmp/patches
+# ============================================================
+# n8n_plus patches — applied to compiled JS in the container
+# ============================================================
+
+# Patch 001: Enable workflow sharing
+# 1. license-state.js — isSharingLicensed() returns true
+RUN sed -i "s/isSharingLicensed() {/isSharingLicensed() { return true; \/\/ n8n_plus:sharing\n        if(false) {/" \
+    /usr/local/lib/node_modules/n8n/node_modules/.pnpm/@n8n+backend-common@file+packages+@n8n+backend-common/node_modules/@n8n/backend-common/dist/license-state.js
+
+# 2. license.js — isSharingEnabled() returns true
+RUN sed -i "s/isSharingEnabled() {/isSharingEnabled() { return true; \/\/ n8n_plus:sharing\n        if(false) {/" \
+    /usr/local/lib/node_modules/n8n/dist/license.js
+
+# 3. frontend.service.js — default sharing: true
+RUN sed -i 's/sharing: false,/sharing: true, \/\/ n8n_plus:sharing/' \
+    /usr/local/lib/node_modules/n8n/dist/services/frontend.service.js
+
+# ============================================================
 
 # Ensure correct ownership
 RUN chown -R node:node /home/node/custom-hooks /home/node/custom-nodes
