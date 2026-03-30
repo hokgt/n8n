@@ -8,12 +8,13 @@ COPY custom-hooks/ /home/node/custom-hooks/
 # Copy custom nodes (if any exist)
 COPY custom-nodes/ /home/node/custom-nodes/
 
-# Apply patches (if any .patch files exist)
+# Apply patches (only .patch files)
 COPY patches/ /tmp/patches/
 RUN cd /usr/local/lib/node_modules/n8n && \
+    ls /tmp/patches/*.patch 2>/dev/null && \
     for p in /tmp/patches/*.patch; do \
-      [ -f "$p" ] && git apply "$p" && echo "Applied: $p" || true; \
-    done; \
+      git apply "$p" && echo "Applied: $p"; \
+    done || echo "No patches to apply"; \
     rm -rf /tmp/patches
 
 # Ensure correct ownership
