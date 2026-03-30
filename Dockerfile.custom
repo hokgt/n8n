@@ -14,15 +14,15 @@ COPY custom-nodes/ /home/node/custom-nodes/
 
 # Patch 001: Enable workflow sharing
 # 1. license-state.js — isSharingLicensed() returns true
-RUN sed -i "s/isSharingLicensed() {/isSharingLicensed() { return true; \/\/ n8n_plus:sharing\n        if(false) {/" \
+RUN sed -i "s|return this.isLicensed('feat:sharing');|return true; // n8n_plus:sharing|" \
     /usr/local/lib/node_modules/n8n/node_modules/.pnpm/@n8n+backend-common@file+packages+@n8n+backend-common/node_modules/@n8n/backend-common/dist/license-state.js
 
 # 2. license.js — isSharingEnabled() returns true
-RUN sed -i "s/isSharingEnabled() {/isSharingEnabled() { return true; \/\/ n8n_plus:sharing\n        if(false) {/" \
+RUN sed -i 's|return this.isLicensed(constants_1.LICENSE_FEATURES.SHARING);|return true; // n8n_plus:sharing|' \
     /usr/local/lib/node_modules/n8n/dist/license.js
 
 # 3. frontend.service.js — default sharing: true
-RUN sed -i 's/sharing: false,/sharing: true, \/\/ n8n_plus:sharing/' \
+RUN sed -i 's|sharing: false,|sharing: true, // n8n_plus:sharing|' \
     /usr/local/lib/node_modules/n8n/dist/services/frontend.service.js
 
 # ============================================================
